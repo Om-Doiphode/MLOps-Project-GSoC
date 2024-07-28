@@ -1,0 +1,53 @@
+stages:
+  data_ingestion:
+    cmd: python src/cnnClassifier/pipeline/stage_01_data_ingestion_pipeline.py
+    deps:
+      - src/cnnClassifier/pipeline/stage_01_data_ingestion_pipeline.py
+      - config/config.yaml
+    params:
+      - TEST_RATIO
+    outs:
+      - artifacts/data_ingestion
+
+  training:
+    cmd:
+      - python src/cnnClassifier/pipeline/stage_02_train_pipeline.py
+    deps:
+      - src/cnnClassifier/pipeline/stage_02_train_pipeline.py
+      - config/config.yaml
+      - artifacts/data_ingestion/train
+      - artifacts/data_ingestion/test
+    params:
+      - IMAGE_SIZE
+      - BATCH_SIZE
+      - INCLUDE_TOP
+      - EPOCHS
+      - CLASSES
+      - WEIGHTS
+      - LEARNING_RATE
+      - COLOR_MODE
+      - CLASS_MODE
+      - OPTIMIZER
+      - TEST_RATIO
+      - HORIZONTAL_FLIP
+      - ZOOM_RANGE
+      - W_SHIFT
+      - H_SHIFT
+      - ROTATION_RANGE
+      - SHEAR_RANGE
+      - FILL_ZEROS
+    outs:
+    - artifacts/training
+
+  evaluation:
+    cmd: python src/cnnClassifier/pipeline/stage_03_evaluation_pipeline.py
+    deps:
+      - src/cnnClassifier/pipeline/stage_03_evaluation_pipeline.py
+      - config/config.yaml
+    params:
+      - IMAGE_SIZE
+      - COLOR_MODE
+      - CLASS_MODE
+    metrics:
+      - scores.json:
+          cache: false

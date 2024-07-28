@@ -1,0 +1,17 @@
+artifacts_root: artifacts
+
+
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  source_URL: shawngano/gano-cat-breed-image-collection
+  local_data_file: artifacts/data_ingestion/gano-cat-breed-image-collection.zip
+  unzip_dir: artifacts/data_ingestion
+
+data_transformation:
+  dataset_path: artifacts/data_ingestion
+
+
+trainer:
+  root_dir: artifacts/training
+  log_file: artifacts/training/train_logs.csv
+  trained_model_path: artifacts/training/model.h5

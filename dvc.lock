@@ -1,0 +1,97 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/cnnClassifier/pipeline/stage_01_data_ingestion_pipeline.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: bd9f723e48a71ebcce51e9e7a93e4a11
+      size: 455
+    - path: src/cnnClassifier/pipeline/stage_01_data_ingestion_pipeline.py
+      hash: md5
+      md5: 90c7abf8489492aa9023e82caffa6200
+      size: 696
+    params:
+      params.yaml:
+        TEST_RATIO: 0.2
+    outs:
+    - path: artifacts/data_ingestion
+      hash: md5
+      md5: 948c09a912aa17ba5f4f2f1073b9ea53.dir
+      size: 267767953
+      nfiles: 5625
+  training:
+    cmd:
+    - python src/cnnClassifier/pipeline/stage_02_train_pipeline.py
+    deps:
+    - path: artifacts/data_ingestion/test
+      hash: md5
+      md5: 5bac76eb4f5dd17bbdfbd735b6653f90.dir
+      size: 20864292
+      nfiles: 570
+    - path: artifacts/data_ingestion/train
+      hash: md5
+      md5: 0ce2cee597a1e87fb0eedf5c6c135314.dir
+      size: 215911065
+      nfiles: 4500
+    - path: config/config.yaml
+      hash: md5
+      md5: bd9f723e48a71ebcce51e9e7a93e4a11
+      size: 455
+    - path: src/cnnClassifier/pipeline/stage_02_train_pipeline.py
+      hash: md5
+      md5: 89b80be00979353011d352f296da3fba
+      size: 882
+    params:
+      params.yaml:
+        BATCH_SIZE: 8
+        CLASSES: 15
+        CLASS_MODE: categorical
+        COLOR_MODE: rgb
+        EPOCHS: 1
+        FILL_ZEROS: false
+        HORIZONTAL_FLIP: false
+        H_SHIFT: 0
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+        INCLUDE_TOP: false
+        LEARNING_RATE: 0.001
+        OPTIMIZER: adam
+        ROTATION_RANGE: 0
+        SHEAR_RANGE: 0
+        TEST_RATIO: 0.2
+        WEIGHTS: imagenet
+        W_SHIFT: 0
+        ZOOM_RANGE: 0
+    outs:
+    - path: artifacts/training
+      hash: md5
+      md5: da3d5aa6ea270c62dc1c0d1122fbfcf7.dir
+      size: 205231818
+      nfiles: 7
+  evaluation:
+    cmd: python src/cnnClassifier/pipeline/stage_03_evaluation_pipeline.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: bd9f723e48a71ebcce51e9e7a93e4a11
+      size: 455
+    - path: src/cnnClassifier/pipeline/stage_03_evaluation_pipeline.py
+      hash: md5
+      md5: f25bc4ebc0db6c1363a0248c000128c7
+      size: 609
+    params:
+      params.yaml:
+        CLASS_MODE: categorical
+        COLOR_MODE: rgb
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: 336223f3b0daf29076081289f958aabd
+      size: 70
