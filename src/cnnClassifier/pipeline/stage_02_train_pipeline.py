@@ -1,6 +1,7 @@
 from cnnClassifier.components.data_transformation import DataTransformation
 from cnnClassifier.components.model_trainer import ModelTrainer
 from cnnClassifier import logger
+import pickle
 
 STAGE_NAME = "Training stage"
 
@@ -11,7 +12,9 @@ class TrainingPipeline:
     def main(self):
         data_transformer = DataTransformation()
         train_dataset, val_dataset, class_names=data_transformer.initiate_data_transformation()
-
+        
+        with open('classes.pkl', 'wb') as f:
+            pickle.dump(class_names, f)
         model_trainer=ModelTrainer()
         model_trainer.train(train_dataset=train_dataset,val_dataset=val_dataset,class_names=class_names)
 

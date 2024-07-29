@@ -44,6 +44,7 @@ stages:
     deps:
       - src/cnnClassifier/pipeline/stage_03_evaluation_pipeline.py
       - config/config.yaml
+      - artifacts/training/model.h5
     params:
       - IMAGE_SIZE
       - COLOR_MODE
