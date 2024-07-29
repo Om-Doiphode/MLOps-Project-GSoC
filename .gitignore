@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 artifacts/
+mlruns/
 build/
 develop-eggs/
 dist/

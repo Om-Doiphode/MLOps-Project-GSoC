@@ -4,6 +4,9 @@ from cnnClassifier.utils.common import read_yaml, save_json
 from cnnClassifier.constants import *
 import os
 import numpy as np
+import dagshub
+import mlflow
+from urllib.parse import urlparse
 
 @dataclass
 class EvaluationConfig:
@@ -11,6 +14,7 @@ class EvaluationConfig:
     params_config = read_yaml(PARAMS_PATH)
     trained_model_path:str = config.trainer.trained_model_path
     dataset:str = config.data_ingestion.unzip_dir
+    mlflow_uri:str=config.evaluation.mlflow_uri
     image_size:tuple=tuple(params_config.IMAGE_SIZE)
     color_mode:str=params_config.COLOR_MODE
     class_mode:str=params_config.CLASS_MODE
@@ -43,7 +47,31 @@ class Evaluation:
         scores = {"loss": self.score[0], "accuracy": self.score[1]}
         save_json(path=Path("scores.json"), data=scores)
         
+    def log_into_mlflow(self):
+        # mlflow.set_registry_uri(self.config.mlflow_uri)
+        # tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+        # with mlflow.start_run():
+        #     mlflow.log_params(self.config.params_config)
+        #     mlflow.log_metrics(
+        #         {"loss": self.score[0], "accuracy": self.score[1]}
+        #     )
+            
+        #     if tracking_url_type_store != "file":
+        #         mlflow.keras.log_model(self.model, "model", registered_model_name="Resnet50V2Model")
+        #     else:
+        #         mlflow.keras.log_model(self.model, "model")
+        import logging
+        mlflow.set_tracking_uri(self.config.mlflow_uri)
+        logging.basicConfig(level=logging.DEBUG)
+
+        with mlflow.start_run() as run:
+            mlflow.log_params(self.config.params_config)
+            mlflow.log_metrics({"loss": self.score[0], "accuracy": self.score[1]})
+            mlflow.keras.log_model(self.model, "model", registered_model_name="Resnet50V2Model")
+
+        
 if __name__=="__main__":
     eval_obj = Evaluation()
     eval_obj.evaluate()
     eval_obj.save_score()
+    eval_obj.log_into_mlflow()

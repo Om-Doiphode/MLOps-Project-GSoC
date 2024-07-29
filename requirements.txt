@@ -17,4 +17,6 @@ Flask-Cors
 kaggle
 scikit-learn
 split-folders
+mlflow
+dagshub
 -e .
